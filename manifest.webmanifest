@@ -1,0 +1,16 @@
+{
+  "id": ".",
+  "name": "LOST ROUTE — Hardcore Monster RPG",
+  "short_name": "LOST ROUTE",
+  "description": "永久死亡と再起を備えたオフライン対応ハードコアRPG",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#111d22",
+  "theme_color": "#192b32",
+  "icons": [
+    { "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
