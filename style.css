@@ -71,6 +71,10 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 .tile.pc { background: #6f9a94; color: #142d2c; }
 .tile.camp { background: #bd9462; color: #382d1c; }
 .tile.gate { background: #d0bb87; color: #393321; }
+.tile.plant-floor { background: #52636a; color: #c6d2cf; }
+.tile.fixed-symbol { background: #d7a95b; color: #302316; font-size: 14px; }
+.tile.legendary-symbol { background: #d8bd53; color: #342b12; font-size: 14px; box-shadow: inset 0 0 0 2px rgba(255,245,183,.35); }
+.tile.fixed-spent { background: #454f52; color: #a2adaa; }
 .tile.player { z-index: 1; outline: 2px solid #f1d88f; outline-offset: -2px; color: #1a292b; background: #e2d19c; box-shadow: 0 0 0 2px rgba(226,209,156,.2); }
 .player-token { width: 72%; height: 72%; display: grid; place-items: center; background: #253f42; color: #f6eac7; border: 2px solid #f6eac7; border-radius: 40% 40% 42% 42%; font-size: 10px; font-weight: 900; }
 .tile small { font: 8px system-ui, 'Yu Gothic', sans-serif; font-weight: 900; }
@@ -185,3 +189,6 @@ button:disabled { cursor: not-allowed; opacity: .45; }
   .two-col { grid-template-columns: 1fr; }
   .app-footer { font-size: 9px; }
 }
+.tile.gym { background: #9b7470; color: #fff1dc; font-size: 9px; font-weight: 900; }
+.tile.npc { background: #d8b76e; color: #302719; font-size: 13px; box-shadow: inset 0 0 0 2px rgba(255,245,200,.28); }
+.tile.item { background: #9cba83; color: #253323; font-size: 13px; box-shadow: inset 0 0 0 2px rgba(239,255,218,.25); }

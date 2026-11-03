@@ -139,11 +139,42 @@
       if (x === 8 && y === 2) { cls += ' pc'; label = 'PC'; title = '保管端末'; }
       if (x === 5 && y === 0) { cls += ' gate'; label = '↑'; title = '１ばんどうろ'; }
       if ((x === 7 || x === 8 || x === 9) && y === 1) { cls += ' house'; label = '▥'; title = '施設'; }
-    } else {
+    } else if (mapId === 'route') {
       if (x >= 2 && x <= 8 && y >= 2 && y <= 5) { cls += ' grass'; label = '♧'; title = '草むら'; }
       else { cls += ' path'; label = '·'; title = '道'; }
       if (x === 10 && y === 6) { cls += ' camp'; label = 'C'; title = 'キャンプ'; }
       if (x === 5 && y === 7) { cls += ' gate'; label = '↓'; title = 'マサラタウン'; }
+      if (x === 5 && y === 0) { cls += ' gate'; label = '↑'; title = 'トキワシティ'; }
+      if (x === 10 && y === 1) { cls += ' gate'; label = '⚡'; title = 'むじんはつでんしょ'; }
+    } else if (mapId === 'powerplant') {
+      cls += ' plant-floor'; label = '·'; title = '発電所内部';
+      if (x === 5 && y === 7) { cls += ' gate'; label = '↓'; title = '１ばんどうろへ戻る'; }
+      const fixed = G.getFixedEncounterAt(state, mapId, x, y);
+      if (fixed) {
+        cls += fixed.available ? (fixed.kind === 'legendary' ? ' legendary-symbol' : ' fixed-symbol') : ' fixed-spent';
+        label = fixed.available ? (fixed.kind === 'legendary' ? '★' : '!') : '×';
+        title = fixed.available ? `${fixed.label}：${species(fixed.speciesId).name}` : '遭遇済み（再出現しない）';
+      }
+    } else if (mapId === 'viridian' || mapId === 'pewter') {
+      cls += ' path'; label = '·'; title = '街道';
+      if (x >= 2 && x <= 4 && y === 2) { cls += ' house'; label = '⌂'; title = '民家'; }
+      if (x === 3 && y === 3) { cls += ' rest'; label = '宿'; title = '休憩所'; }
+      if (x === 8 && y === 3) { cls += ' pc'; label = 'PC'; title = '保管端末'; }
+      if (x === 5 && y === 0) { cls += ' gate'; label = '↑'; title = mapId === 'viridian' ? '２ばんどうろ' : 'この先は未実装'; }
+      if (x === 5 && y === 7) { cls += ' gate'; label = '↓'; title = mapId === 'viridian' ? '１ばんどうろ' : 'トキワのもり'; }
+      if (x === 8 && y === 1) { cls += ' gym'; label = 'GYM'; title = 'ポケモンジム（次工程で実装）'; }
+      if (mapId === 'viridian' && x === 6 && y === 4 && G.tileEventHint(state.adventure, mapId, x, y)) { cls += ' npc'; label = '人'; title = '町の案内人'; }
+    } else if (mapId === 'route2') {
+      if (x >= 2 && x <= 9 && y >= 2 && y <= 5) { cls += ' grass'; label = '♧'; title = '草むら'; }
+      else { cls += ' path'; label = '·'; title = '道'; }
+      if (x === 5 && y === 7) { cls += ' gate'; label = '↓'; title = 'トキワシティ'; }
+      if (x === 5 && y === 0) { cls += ' gate'; label = '↑'; title = 'トキワのもり'; }
+    } else if (mapId === 'forest') {
+      cls += ' plant-floor'; label = '♣'; title = '木々';
+      if (x >= 2 && x <= 9 && y >= 2 && y <= 5) { cls += ' grass'; label = '♧'; title = '草むら'; }
+      if (x === 5 && y === 7) { cls += ' gate'; label = '↓'; title = '２ばんどうろ'; }
+      if (x === 5 && y === 0) { cls += ' gate'; label = '↑'; title = 'ニビシティ'; }
+      if (x === 8 && y === 3 && G.tileEventHint(state.adventure, mapId, x, y)) { cls += ' item'; label = 'P'; title = '拾える道具'; }
     }
     if (x === playerX && y === playerY) return `<div class="${cls} player" title="現在地: ${title}"><div class="player-token">YOU</div></div>`;
     return `<div class="${cls}" title="${title}"><small>${label}</small></div>`;
@@ -160,7 +191,7 @@
     return `<section class="panel map-panel">
       <div class="map-top"><div><div class="eyebrow">CURRENT AREA</div><h2>${mapName}</h2></div><span>${p.x + 1} : ${p.y + 1}</span></div>
       <div class="map-grid">${cells.join('')}</div>
-      <div class="map-legend"><span><i class="legend-dot" style="background:#50745b"></i>草むら</span><span><i class="legend-dot" style="background:#b58c63"></i>休憩所</span><span><i class="legend-dot" style="background:#6f9a94"></i>保管端末</span><span><i class="legend-dot" style="background:#e2d19c"></i>主人公</span></div>
+      <div class="map-legend"><span><i class="legend-dot" style="background:#50745b"></i>草むら</span><span><i class="legend-dot" style="background:#b58c63"></i>休憩所</span><span><i class="legend-dot" style="background:#6f9a94"></i>保管端末</span><span><i class="legend-dot" style="background:#d4a95a"></i>一度きりの遭遇</span><span>人 / P：一度きりのイベント・道具</span><span><i class="legend-dot" style="background:#e2d19c"></i>主人公</span></div>
     </section>
     <div class="panel panel-pad">
       <div class="panel-title">移動 <small>矢印キー / WASD でも操作できます</small></div>
@@ -176,7 +207,12 @@
       </div>
       ${a.recoveryState === 'box_rebuild' ? `<p class="warning-note section-gap">全滅から戻りました。街の保管端末（右上の PC）まで移動し、生存個体を手動で手持ちに戻してください。HP・状態異常は全滅前のままです。</p>` : ''}
       ${a.location.mapId === 'town' && !atPC ? `<p class="muted" style="font-size:10px;margin:12px 0 0">ボックスの整理は街の保管端末で行えます。</p>` : ''}
-      ${a.location.mapId === 'route' && !restKind ? `<p class="muted" style="font-size:10px;margin:12px 0 0">草むらでは野生ポケモンと遭遇します。キャンプは右下（C）です。</p>` : ''}
+      ${a.location.mapId === 'route' && !restKind ? `<p class="muted" style="font-size:10px;margin:12px 0 0">草むらでは野生ポケモンと遭遇します。右上の「⚡」から発電所へ進めます。キャンプは右下（C）です。</p>` : ''}
+      ${a.location.mapId === 'powerplant' ? `<p class="warning-note section-gap">発電所内の「!」は一度きりの固定シンボル、「★」は伝説ポケモンです。どちらも撃破・逃走・捕獲・全滅後は再出現しません。</p>` : ''}
+      ${a.location.mapId === 'viridian' ? `<p class="muted" style="font-size:10px;margin:12px 0 0">人のマークに入ると案内を聞けます。宿と保管端末を利用できます。北の出口は２ばんどうろです。</p>` : ''}
+      ${a.location.mapId === 'route2' ? `<p class="muted" style="font-size:10px;margin:12px 0 0">草むらではニドランやナゾノクサに遭遇します。北へ進むとトキワのもりです。</p>` : ''}
+      ${a.location.mapId === 'forest' ? `<p class="muted" style="font-size:10px;margin:12px 0 0">森にはむしポケモンが生息しています。Pのマークで道具を一度だけ拾えます。北へ抜けるとニビシティです。</p>` : ''}
+      ${a.location.mapId === 'pewter' ? `<p class="muted" style="font-size:10px;margin:12px 0 0">ニビシティに到着しました。ジムの戦闘・バッジイベントは次工程で追加します。</p>` : ''}
     </div>`;
   }
 
@@ -184,7 +220,7 @@
     const a = currentAdventure();
     const partyRows = a.party.map(monMini).join('') || `<div class="empty-note">手持ちが空です。街の保管端末で再編成してください。</div>`;
     return `${pageHeading('FIELD / ADVENTURE', `${escapeHTML(a.playerName)}の冒険`, `<span class="pill">${money(a.money)}</span>`)}
-      <div class="status-strip"><span>現在地：<strong>${G.getCurrentMapName(state)}</strong></span><span>最後の休憩：<strong>マサラタウン</strong></span><span>全滅：<strong>${a.wipeCount}回</strong></span></div>
+      <div class="status-strip"><span>現在地：<strong>${G.getCurrentMapName(state)}</strong></span><span>最後の休憩：<strong>${G.getMapName(a.lastRestTownId || 'town')}</strong></span><span>全滅：<strong>${a.wipeCount}回</strong></span><span>発見エリア：<strong>${(a.storyFlags.discoveredAreas || ['town']).length}</strong></span></div>
       <div class="field-layout"><div>${renderMap()}</div><aside class="side-stack">
         <section class="panel panel-pad"><div class="panel-title">手持ち <small>${a.party.length}/6</small></div><div class="party-mini">${partyRows}</div><div class="btn-row section-gap"><button class="btn small" data-action="tab" data-tab="party">手持ちを確認</button><button class="btn small" data-action="tab" data-tab="pokedex">図鑑</button></div></section>
         <section class="panel panel-pad"><div class="panel-title">冒険の状況</div>
@@ -274,6 +310,11 @@
     const events = a.historyEvents.map(event => `<div class="record-entry"><div><strong>${escapeHTML(event.text)}</strong><small>${fmtDate(event.at)} · ${escapeHTML(event.type)}</small></div></div>`).join('');
     const living = a.party.concat(a.box).map(id => getMon(id)).filter(Boolean);
     const all = Object.values(a.pokemonRecords);
+    const fixedRows = Object.values(G.FIXED_ENCOUNTERS).map(encounter => {
+      const flag = a.encounterFlags[encounter.id];
+      const status = !flag ? '未遭遇' : flag.outcome === 'in_progress' ? '遭遇中' : ({ defeated: '撃破', escaped: '逃走', caught: '捕獲', lost_in_wipe: '全滅により機会喪失' }[flag.outcome] || flag.outcome);
+      return `<div class="record-entry"><div><strong>${escapeHTML(species(encounter.speciesId).name)} · ${encounter.kind === 'legendary' ? '伝説' : '固定シンボル'}</strong><small>${escapeHTML(G.getMapName(encounter.mapId))} · ${status}${flag && flag.captureFailures ? ` · 捕獲失敗 ${flag.captureFailures}回` : ''}</small></div><span class="pill">${flag && flag.noRespawn ? '再出現なし' : '未消費'}</span></div>`;
+    }).join('');
     return `${pageHeading('ADVENTURE LOG', '冒険の記録', `<span class="pill">${all.length}個体</span>`)}
       <div class="two-col"><section class="panel panel-pad"><div class="panel-title">冒険データ</div>
         <div class="info-line"><span>主人公</span><strong>${escapeHTML(a.playerName)}</strong></div>
@@ -284,6 +325,7 @@
         <div class="info-line"><span>墓場の記録</span><strong>${a.graveyard.length}匹</strong></div>
         <div class="info-line"><span>バッジ</span><strong>${a.badges.length}個</strong></div>
       </section><section class="panel panel-pad"><div class="panel-title">歴代個体 <small>${all.length}匹</small></div><div class="record-list">${all.slice().reverse().map(mon => `<div class="record-entry"><div><strong>${escapeHTML(mon.nickname)}</strong><small>${escapeHTML(species(mon.speciesId).name)} · Lv.${mon.level} · ${mon.alive ? (mon.membership === 'party' ? '手持ち' : 'ボックス') : '墓場'}</small></div><button class="btn small ghost" data-action="detail" data-id="${mon.id}">記録</button></div>`).join('')}</div></section></div>
+      <section class="panel panel-pad section-gap"><div class="panel-title">一度きりの遭遇記録</div><div class="record-list">${fixedRows}</div></section>
       <section class="panel panel-pad section-gap"><div class="panel-title">冒険ログ <small>最新から表示</small></div><div class="record-list">${events || '<div class="empty-note">まだ記録はありません。</div>'}</div></section>
       ${selectedRecordId ? renderDetail(getMon(selectedRecordId)) : ''}`;
   }
@@ -328,7 +370,11 @@
       return `<button class="btn battle-move" data-action="attack" data-move="${move.id}"><strong>${escapeHTML(move.name)}</strong><small>${escapeHTML(move.type)} · 威力 ${move.power || '変化'}</small></button>`;
     }).join('');
     const switchButtons = a.party.filter(id => id !== player.id).map(id => getMon(id)).filter(Boolean).map(mon => `<button class="btn small ghost" data-action="switch" data-id="${mon.id}">${escapeHTML(mon.nickname)}に交代</button>`).join('');
-    return `${pageHeading('WILD ENCOUNTER', '野生ポケモンとの戦闘', '<span class="pill">TURN BATTLE</span>')}
+    const fixedFlag = battle.fixedEncounterId ? a.encounterFlags[battle.fixedEncounterId] : null;
+    const isLegendary = fixedFlag && fixedFlag.kind === 'legendary';
+    const battleTitle = isLegendary ? '伝説ポケモンとの戦闘' : fixedFlag ? '一度きりの固定遭遇' : '野生ポケモンとの戦闘';
+    const battleBadge = isLegendary ? 'LEGENDARY / ONE TIME' : fixedFlag ? 'ONE TIME' : 'TURN BATTLE';
+    return `${pageHeading('WILD ENCOUNTER', battleTitle, `<span class="pill">${battleBadge}</span>`)}
       <section class="panel battle-panel">
         <div class="battle-scene">${battleCreature(battle.enemy, true)}${battleCreature(player, false)}</div>
         <div class="battle-log">${battle.log.slice(-3).map(line => `<div>${escapeHTML(line)}</div>`).join('')}</div>
@@ -338,7 +384,7 @@
           </div>
         </div>
       </section>
-      <p class="muted" style="font-size:10px;margin:10px 2px">戦闘中にHPが0になった仲間は即時に死亡し、墓場へ移動します。逃走失敗中も相手の行動が発生します。</p>`;
+      <p class="muted" style="font-size:10px;margin:10px 2px">戦闘中にHPが0になった仲間は即時に死亡し、墓場へ移動します。逃走失敗中も相手の行動が発生します。${fixedFlag ? ' この遭遇は今回限りで、戦闘を終えた後は再挑戦できません。' : ''}</p>`;
   }
 
   function renderStarterSelection(isRestart) {
@@ -422,6 +468,8 @@
     const result = G.movePlayer(state, dx, dy);
     if (!result.ok) { notify(result.reason); return; }
     await persist(true);
+    if (result.areaChanged && result.areaName) notify(`${result.areaName}に到着した。`);
+    if (result.storyMessage) notify(result.storyMessage);
   }
 
   async function performRest(kind) {

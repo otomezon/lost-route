@@ -232,3 +232,197 @@ test('zero-HP living records and mismatched memberships are rejected by integrit
   mon.currentHP = 0;
   assert.throws(() => G.assertValidSave(state), /生存状態と所属が一致/);
 });
+
+test('Power Plant fixed Electrode symbol triggers once and remains consumed after escape', () => {
+  const state = fresh();
+  const a = state.adventure;
+  a.location = { mapId: 'powerplant', x: 2, y: 4 };
+  const moved = G.movePlayer(state, 1, 0, () => 0.99, '2026-11-03T03:00:00.000Z');
+  assert.equal(moved.encounter, true);
+  assert.equal(a.activeBattle.enemy.speciesId, 'electrode');
+  assert.equal(a.activeBattle.fixedEncounterId, 'powerplant_electrode');
+  assert.equal(G.getFixedEncounterAt(state, 'powerplant', 3, 4).available, false);
+  assert.equal(G.resolveBattleAction(state, { type: 'run' }, { rng: () => 0 }).escaped, true);
+  assert.equal(a.encounterFlags.powerplant_electrode.outcome, 'escaped');
+  a.location = { mapId: 'powerplant', x: 2, y: 4 };
+  const revisit = G.movePlayer(state, 1, 0, () => 0.99);
+  assert.equal(revisit.encounter, false);
+  assert.equal(a.activeBattle, null);
+  assert.equal(G.assertValidSave(state), true);
+});
+
+test('Power Plant is reachable from Route 1 and its Zapdos legendary encounter is one-time', () => {
+  const state = fresh('squirtle');
+  const a = state.adventure;
+  a.location = { mapId: 'route', x: 10, y: 2 };
+  const enter = G.movePlayer(state, 0, -1, () => 0.99);
+  assert.equal(enter.areaChanged, true);
+  assert.equal(a.location.mapId, 'powerplant');
+  assert.equal(a.storyFlags.powerplantDiscovered, true);
+
+  // Walk to the symbol while avoiding the ordinary random encounter roll.
+  G.movePlayer(state, 1, 0, () => 0.99);
+  G.movePlayer(state, 0, -1, () => 0.99);
+  G.movePlayer(state, 0, -1, () => 0.99);
+  G.movePlayer(state, 0, -1, () => 0.99);
+  G.movePlayer(state, 0, -1, () => 0.99);
+  assert.equal(a.location.x, 6);
+  assert.equal(a.location.y, 2);
+  assert.equal(a.activeBattle.enemy.speciesId, 'zapdos');
+  assert.equal(a.activeBattle.fixedEncounterId, 'powerplant_zapdos');
+  assert.equal(a.encounterFlags.powerplant_zapdos.kind, 'legendary');
+  assert.equal(a.encounterFlags.powerplant_zapdos.noRespawn, true);
+  assert.equal(G.assertValidSave(state), true);
+  const activeBattleBackup = G.makeBackup(state, '2026-11-03T03:30:00.000Z');
+  const activeBattleRestore = G.parseBackup(JSON.stringify(activeBattleBackup));
+  assert.equal(activeBattleRestore.state.adventure.activeBattle.fixedEncounterId, 'powerplant_zapdos');
+  assert.equal(activeBattleRestore.state.adventure.encounterFlags.powerplant_zapdos.outcome, 'in_progress');
+
+  a.inventory.pokeball = 1;
+  const rolls = [0.99, 0, 0.99]; // failed capture, select Thunderbolt, then miss.
+  let index = 0;
+  const failedCapture = G.resolveBattleAction(state, { type: 'throw' }, { rng: () => rolls[index++] ?? 0.99 });
+  assert.equal(failedCapture.ok, true);
+  assert.equal(a.encounterFlags.powerplant_zapdos.captureAttempts, 1);
+  assert.equal(a.encounterFlags.powerplant_zapdos.captureFailures, 1);
+  assert.equal(a.encounterFlags.powerplant_zapdos.lastCaptureOutcome, 'failed');
+  assert.equal(G.resolveBattleAction(state, { type: 'run' }, { rng: () => 0 }).escaped, true);
+  assert.equal(a.encounterFlags.powerplant_zapdos.outcome, 'escaped');
+  assert.equal(G.canTriggerFixedEncounter(state, 'powerplant_zapdos'), false);
+  assert.equal(G.assertValidSave(state), true);
+  const resolvedBackup = G.makeBackup(state, '2026-11-03T03:31:00.000Z');
+  const resolvedRestore = G.parseBackup(JSON.stringify(resolvedBackup));
+  assert.equal(resolvedRestore.state.adventure.encounterFlags.powerplant_zapdos.captureFailures, 1);
+  assert.equal(resolvedRestore.state.adventure.encounterFlags.powerplant_zapdos.outcome, 'escaped');
+});
+
+test('fixed encounter consumed by a party wipe cannot be retried after recovery', () => {
+  const state = fresh();
+  const a = state.adventure;
+  const mon = active(state);
+  a.location = { mapId: 'powerplant', x: 3, y: 4 };
+  assert.equal(G.startFixedEncounter(state, 'powerplant_electrode', 'electrode', 24), true);
+  G.applyDamage(state, mon.id, mon.currentHP, { cause: 'テスト全滅', location: '１ばんどうろ' });
+  assert.equal(G.processWipe(state), true);
+  assert.equal(a.encounterFlags.powerplant_electrode.outcome, 'lost_in_wipe');
+  assert.equal(a.encounterFlags.powerplant_electrode.noRespawn, true);
+  assert.equal(G.canTriggerFixedEncounter(state, 'powerplant_electrode'), false);
+  assert.equal(G.assertValidSave(state), true);
+});
+
+
+test('Kanto opening region connects Viridian, Route 2, Viridian Forest, and Pewter with discovery flags', () => {
+  const state = fresh();
+  const a = state.adventure;
+  const walk = (dx, dy, count) => {
+    for (let i = 0; i < count; i++) {
+      const result = G.movePlayer(state, dx, dy, () => 0.99);
+      assert.equal(result.ok, true, result.reason || 'movement should succeed');
+    }
+  };
+  walk(0, -1, 5); // Masara Town north exit -> Route 1
+  assert.equal(a.location.mapId, 'route');
+  walk(0, -1, 6); // Route 1 north exit -> Viridian City
+  assert.equal(a.location.mapId, 'viridian');
+  walk(0, -1, 6); // Viridian north exit -> Route 2
+  assert.equal(a.location.mapId, 'route2');
+  walk(0, -1, 6); // Route 2 north exit -> Viridian Forest
+  assert.equal(a.location.mapId, 'forest');
+  walk(0, -1, 6); // Forest north exit -> Pewter City
+  assert.equal(a.location.mapId, 'pewter');
+  assert.deepEqual(a.storyFlags.discoveredAreas, ['town', 'route', 'viridian', 'route2', 'forest', 'pewter']);
+  assert.equal(G.assertValidSave(state), true);
+});
+
+test('Viridian guide story event triggers once and is recorded independently from party state', () => {
+  const state = fresh();
+  const a = state.adventure;
+  a.location = { mapId: 'viridian', x: 5, y: 4 };
+  const first = G.movePlayer(state, 1, 0, () => 0.99, '2026-11-03T04:00:00.000Z');
+  assert.match(first.storyMessage, /案内人/);
+  assert.equal(a.storyFlags.events.viridian_guide, true);
+  a.location = { mapId: 'viridian', x: 5, y: 4 };
+  const second = G.movePlayer(state, 1, 0, () => 0.99, '2026-11-03T04:01:00.000Z');
+  assert.equal(second.storyMessage, null);
+  assert.equal(a.historyEvents.filter(event => event.type === 'story_event' && event.text.includes('案内人')).length, 1);
+  assert.equal(G.assertValidSave(state), true);
+});
+
+test('Viridian Forest item pickup is one-time and survives a wipe', () => {
+  const state = fresh();
+  const a = state.adventure;
+  const originalPotionCount = a.inventory.potion;
+  a.location = { mapId: 'forest', x: 7, y: 3 };
+  const first = G.movePlayer(state, 1, 0, () => 0.99, '2026-11-03T04:00:00.000Z');
+  assert.match(first.storyMessage, /キズぐすり/);
+  assert.equal(a.inventory.potion, originalPotionCount + 1);
+  assert.equal(a.storyFlags.events.forest_potion, true);
+  a.location = { mapId: 'forest', x: 7, y: 3 };
+  const second = G.movePlayer(state, 1, 0, () => 0.99, '2026-11-03T04:01:00.000Z');
+  assert.equal(second.storyMessage, null);
+  assert.equal(a.inventory.potion, originalPotionCount + 1);
+  const doomed = active(state);
+  G.applyDamage(state, doomed.id, doomed.currentHP, { cause: 'テスト', location: 'トキワのもり' });
+  assert.equal(G.processWipe(state), true);
+  assert.equal(a.storyFlags.events.forest_potion, true);
+  assert.equal(a.inventory.potion, originalPotionCount + 1);
+  assert.equal(G.assertValidSave(state), true);
+});
+
+test('resting in Viridian City updates the wipe return point and preserves the town checkpoint', () => {
+  const state = fresh();
+  const a = state.adventure;
+  const reserve = boxMon(state);
+  a.location = { mapId: 'viridian', x: 3, y: 3 };
+  assert.equal(G.currentRestKind(state), 'town');
+  assert.equal(G.rest(state, 'town').ok, true);
+  assert.equal(a.lastRestTownId, 'viridian');
+  const doomed = active(state);
+  G.applyDamage(state, doomed.id, doomed.currentHP, { cause: 'テスト全滅', location: 'トキワシティ' });
+  assert.equal(G.processWipe(state), true);
+  assert.deepEqual(a.location, { mapId: 'viridian', x: 5, y: 5 });
+  assert.equal(a.recoveryState, 'box_rebuild');
+  assert.equal(reserve.alive, true);
+  assert.equal(G.assertValidSave(state), true);
+});
+
+test('Viridian City storage terminal supports manual party rebuilding', () => {
+  const state = fresh();
+  const reserve = boxMon(state);
+  state.adventure.location = { mapId: 'viridian', x: 8, y: 3 };
+  assert.equal(G.isAtTownFacility(state), true);
+  assert.equal(G.isAtBoxFacility(state), true);
+  assert.equal(G.moveToParty(state, reserve.id, true).ok, true);
+  assert.deepEqual(state.adventure.party, [state.adventure.party[0], reserve.id]);
+  assert.equal(G.assertValidSave(state), true);
+});
+
+test('Route 2 has its own wild encounter pool with new regional species', () => {
+  const state = fresh();
+  state.adventure.location = { mapId: 'route2', x: 5, y: 4 };
+  const result = G.movePlayer(state, 1, 0, () => 0);
+  assert.equal(result.encounter, true);
+  assert.equal(state.adventure.activeBattle.enemy.speciesId, 'nidoran_m');
+  assert.equal(state.adventure.pokedex.nidoran_m.seen, true);
+  assert.equal(G.assertValidSave(state), true);
+});
+
+
+test('P-002 legacy saves without new story containers remain valid and lazily migrate on use', () => {
+  const state = fresh();
+  delete state.adventure.storyFlags.discoveredAreas;
+  delete state.adventure.storyFlags.events;
+  assert.equal(G.assertValidSave(state), true);
+  state.adventure.location = { mapId: 'viridian', x: 5, y: 4 };
+  const result = G.movePlayer(state, 1, 0, () => 0.99);
+  assert.match(result.storyMessage, /案内人/);
+  assert.ok(Array.isArray(state.adventure.storyFlags.discoveredAreas));
+  assert.equal(state.adventure.storyFlags.events.viridian_guide, true);
+  assert.equal(G.assertValidSave(state), true);
+});
+
+test('invalid last-rest town IDs are rejected by save integrity validation', () => {
+  const state = fresh();
+  state.adventure.lastRestTownId = 'forest';
+  assert.throws(() => G.assertValidSave(state), /最後に休憩した街/);
+});

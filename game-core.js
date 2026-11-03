@@ -22,7 +22,12 @@
     poison_sting: { id: 'poison_sting', name: 'どくばり', type: 'poison', power: 15, accuracy: 1, poisonChance: 0.25 },
     string_shot: { id: 'string_shot', name: 'いとをはく', type: 'bug', power: 0, accuracy: 0.95, debuff: 'speed' },
     growl: { id: 'growl', name: 'なきごえ', type: 'normal', power: 0, accuracy: 1, debuff: 'attack' },
-    thunder_shock: { id: 'thunder_shock', name: 'でんきショック', type: 'electric', power: 40, accuracy: 1, poisonChance: 0 }
+    thunder_shock: { id: 'thunder_shock', name: 'でんきショック', type: 'electric', power: 40, accuracy: 1 },
+    thunderbolt: { id: 'thunderbolt', name: '１０まんボルト', type: 'electric', power: 90, accuracy: 0.95, poisonChance: 0.1 },
+    peck: { id: 'peck', name: 'つつく', type: 'flying', power: 35, accuracy: 1 },
+    body_slam: { id: 'body_slam', name: 'のしかかり', type: 'normal', power: 85, accuracy: 1 },
+    swift: { id: 'swift', name: 'スピードスター', type: 'normal', power: 60, accuracy: 1 },
+    absorb: { id: 'absorb', name: 'すいとる', type: 'grass', power: 20, accuracy: 1 }
   };
 
   // The first slice uses a small, data-driven sample roster. Expand the data table for the full game.
@@ -34,10 +39,35 @@
     rattata: { id: 'rattata', name: 'コラッタ', type: 'normal', color: '#9a7b9d', baseHP: 30, baseAttack: 56, baseDefense: 35, baseSpeed: 72, catchRate: 0.72, moves: ['tackle', 'quick_attack', 'growl'] },
     caterpie: { id: 'caterpie', name: 'キャタピー', type: 'bug', color: '#82a94a', baseHP: 45, baseAttack: 30, baseDefense: 35, baseSpeed: 45, catchRate: 0.8, moves: ['tackle', 'string_shot'] },
     weedle: { id: 'weedle', name: 'ビードル', type: 'bug', secondaryType: 'poison', color: '#c69b54', baseHP: 40, baseAttack: 35, baseDefense: 30, baseSpeed: 50, catchRate: 0.8, moves: ['poison_sting', 'string_shot', 'tackle'] },
-    pikachu: { id: 'pikachu', name: 'ピカチュウ', type: 'electric', color: '#d9bd50', baseHP: 35, baseAttack: 55, baseDefense: 30, baseSpeed: 90, catchRate: 0.35, moves: ['thunder_shock', 'quick_attack', 'growl'] }
+    pikachu: { id: 'pikachu', name: 'ピカチュウ', type: 'electric', color: '#d9bd50', baseHP: 35, baseAttack: 55, baseDefense: 30, baseSpeed: 90, catchRate: 0.35, moves: ['thunder_shock', 'quick_attack', 'growl'] },
+    magnemite: { id: 'magnemite', name: 'コイル', type: 'electric', secondaryType: 'steel', color: '#a9b7bf', baseHP: 25, baseAttack: 35, baseDefense: 70, baseSpeed: 45, catchRate: 0.55, moves: ['thunder_shock', 'tackle', 'swift'] },
+    voltorb: { id: 'voltorb', name: 'ビリリダマ', type: 'electric', color: '#d56f65', baseHP: 40, baseAttack: 30, baseDefense: 50, baseSpeed: 100, catchRate: 0.6, moves: ['tackle', 'swift', 'thunder_shock'] },
+    electrode: { id: 'electrode', name: 'マルマイン', type: 'electric', color: '#d56e66', baseHP: 60, baseAttack: 50, baseDefense: 70, baseSpeed: 150, catchRate: 0.3, moves: ['thunderbolt', 'swift', 'tackle'] },
+    zapdos: { id: 'zapdos', name: 'サンダー', type: 'electric', secondaryType: 'flying', color: '#d7b64f', baseHP: 90, baseAttack: 90, baseDefense: 85, baseSpeed: 100, catchRate: 0.03, moves: ['thunderbolt', 'peck', 'quick_attack', 'thunder_shock'] },
+    nidoran_m: { id: 'nidoran_m', name: 'ニドラン♂', type: 'poison', color: '#7891b5', baseHP: 46, baseAttack: 57, baseDefense: 40, baseSpeed: 50, catchRate: 0.55, moves: ['tackle', 'poison_sting', 'growl'] },
+    nidoran_f: { id: 'nidoran_f', name: 'ニドラン♀', type: 'poison', color: '#b57d9c', baseHP: 55, baseAttack: 47, baseDefense: 52, baseSpeed: 41, catchRate: 0.55, moves: ['tackle', 'poison_sting', 'growl'] },
+    oddish: { id: 'oddish', name: 'ナゾノクサ', type: 'grass', secondaryType: 'poison', color: '#6a9e67', baseHP: 45, baseAttack: 50, baseDefense: 55, baseSpeed: 30, catchRate: 0.6, moves: ['absorb', 'poison_sting', 'tackle'] },
+    metapod: { id: 'metapod', name: 'トランセル', type: 'bug', color: '#86a96b', baseHP: 50, baseAttack: 20, baseDefense: 55, baseSpeed: 30, catchRate: 0.6, moves: ['tackle', 'string_shot'] },
+    kakuna: { id: 'kakuna', name: 'コクーン', type: 'bug', secondaryType: 'poison', color: '#c99d5d', baseHP: 45, baseAttack: 25, baseDefense: 50, baseSpeed: 35, catchRate: 0.6, moves: ['poison_sting', 'string_shot', 'tackle'] }
   };
   // Alias for a move used by Charmander's early move set.
   MOVES.scratch = { id: 'scratch', name: 'ひっかく', type: 'normal', power: 40, accuracy: 1 };
+
+  const MAPS = { town: 'マサラタウン', route: '１ばんどうろ', viridian: 'トキワシティ', route2: '２ばんどうろ', forest: 'トキワのもり', pewter: 'ニビシティ', powerplant: 'むじんはつでんしょ' };
+  const CITY_MAPS = ['town', 'viridian', 'pewter'];
+  const TOWN_SPAWNS = { town: { x: 5, y: 5 }, viridian: { x: 5, y: 5 }, pewter: { x: 5, y: 5 } };
+  const REST_TILES = { town: { x: 3, y: 2 }, viridian: { x: 3, y: 3 }, pewter: { x: 3, y: 3 } };
+  const BOX_TILES = { town: { x: 8, y: 2 }, viridian: { x: 8, y: 3 }, pewter: { x: 8, y: 3 } };
+  const STORY_EVENT_TILES = {
+    viridian_guide: { id: 'viridian_guide', mapId: 'viridian', x: 6, y: 4, kind: 'dialogue', message: '町の案内人「草むらでは野生のポケモンに出会う。仲間のHPには気を配るんじゃぞ。」', history: 'トキワシティの案内人から冒険の助言を聞いた' },
+    forest_potion: { id: 'forest_potion', mapId: 'forest', x: 8, y: 3, kind: 'item', item: 'potion', quantity: 1, message: '木陰でキズぐすりを1個見つけた。', history: 'トキワのもりでキズぐすりを見つけた' }
+  };
+
+  // Fixed symbols are consumed on first contact. Demo levels/coordinates are AI-decided content defaults.
+  const FIXED_ENCOUNTERS = {
+    powerplant_electrode: { id: 'powerplant_electrode', mapId: 'powerplant', x: 3, y: 4, speciesId: 'electrode', level: 24, kind: 'fixed', label: 'アイテムに擬態した固定シンボル' },
+    powerplant_zapdos: { id: 'powerplant_zapdos', mapId: 'powerplant', x: 6, y: 2, speciesId: 'zapdos', level: 30, kind: 'legendary', label: '伝説のポケモン' }
+  };
 
   const TYPE_EFFECT = {
     fire: { grass: 2, bug: 2, water: 0.5, fire: 0.5 },
@@ -119,7 +149,7 @@
       wipeCount: 0,
       badges: [],
       inventory: { potion: 3, pokeball: 5 },
-      storyFlags: { firstDeparture: false },
+      storyFlags: { firstDeparture: false, discoveredAreas: ['town'], events: {} },
       pokemonRecords: {},
       party: [],
       box: [],
@@ -189,7 +219,7 @@
     creature.alive = false;
     creature.membership = 'graveyard';
     const diedAt = ctx.at || isoNow();
-    const location = ctx.location || (a.location.mapId === 'route' ? '１ばんどうろ' : 'マサラタウン');
+    const location = ctx.location || (MAPS[a.location.mapId] || '不明な場所');
     const cause = ctx.cause || '戦闘ダメージ';
     creature.death = {
       at: diedAt,
@@ -236,7 +266,9 @@
     a.money = Math.floor(a.money / 2);
     a.activeBattle = null;
     a.pendingNicknameId = null;
-    a.location = { mapId: 'town', x: 5, y: 5 };
+    const returnTown = CITY_MAPS.includes(a.lastRestTownId) ? a.lastRestTownId : 'town';
+    const returnSpawn = TOWN_SPAWNS[returnTown] || TOWN_SPAWNS.town;
+    a.location = { mapId: returnTown, x: returnSpawn.x, y: returnSpawn.y };
     a.lastWipeId = uid('wipe');
     a.recoveryState = a.box.length > 0 ? 'box_rebuild' : 'starter_select';
     addHistory(a, 'wipe', `全滅した。所持金が半分になり（${a.money}円）、${a.recoveryState === 'box_rebuild' ? 'ボックスから再編成' : '新しい最初のポケモン選択'}が必要`, at || isoNow());
@@ -257,7 +289,7 @@
 
   function moveToParty(state, creatureId, atTown) {
     const a = state.adventure;
-    if (!atTown || a.location.mapId !== 'town') return { ok: false, reason: 'ボックスの整理は街の施設でのみ行えます。' };
+    if (!atTown || !isAtBoxFacility(state)) return { ok: false, reason: 'ボックスの整理は街の保管端末でのみ行えます。' };
     if (a.party.length >= PARTY_LIMIT) return { ok: false, reason: '手持ちは6匹までです。' };
     const creature = a.pokemonRecords[creatureId];
     if (!creature || !creature.alive || creature.membership !== 'box' || !a.box.includes(creatureId)) return { ok: false, reason: '編成できる生存個体ではありません。' };
@@ -271,7 +303,7 @@
 
   function moveToBox(state, creatureId, atTown) {
     const a = state.adventure;
-    if (!atTown || a.location.mapId !== 'town') return { ok: false, reason: 'ボックスの整理は街の施設でのみ行えます。' };
+    if (!atTown || !isAtBoxFacility(state)) return { ok: false, reason: 'ボックスの整理は街の保管端末でのみ行えます。' };
     if (a.party.length <= 1) return { ok: false, reason: '最後の1匹は手持ちに残してください。' };
     const creature = a.pokemonRecords[creatureId];
     if (!creature || !creature.alive || creature.membership !== 'party' || !a.party.includes(creatureId)) return { ok: false, reason: '預けられる生存個体ではありません。' };
@@ -284,8 +316,10 @@
 
   function rest(state, locationKind, at) {
     const a = state.adventure;
-    const isTown = locationKind === 'town' && a.location.mapId === 'town' && a.location.x === 3 && a.location.y === 2;
-    const isCamp = locationKind === 'camp' && a.location.mapId === 'route' && a.location.x === 10 && a.location.y === 6;
+    const p = a.location;
+    const restTile = REST_TILES[p.mapId];
+    const isTown = locationKind === 'town' && !!restTile && p.x === restTile.x && p.y === restTile.y;
+    const isCamp = locationKind === 'camp' && p.mapId === 'route' && p.x === 10 && p.y === 6;
     if (!isTown && !isCamp) return { ok: false, reason: 'ここでは休憩できません。' };
     for (const id of a.party) {
       const creature = a.pokemonRecords[id];
@@ -294,8 +328,8 @@
         creature.status = null;
       }
     }
-    if (isTown) a.lastRestTownId = 'town';
-    addHistory(a, 'rest', isTown ? '街で休憩した' : 'キャンプで休憩した', at || isoNow());
+    if (isTown) a.lastRestTownId = p.mapId;
+    addHistory(a, 'rest', isTown ? `${MAPS[p.mapId]}で休憩した` : 'キャンプで休憩した', at || isoNow());
     return { ok: true, healedCount: a.party.length };
   }
 
@@ -376,16 +410,36 @@
     const enemy = makeWild(speciesId, level);
     recordSeen(state, speciesId, at || isoNow());
     a.activeBattle = {
-      id: uid('battle'),
-      fixedEncounterId: null,
-      enemy,
-      activePokemonId: a.party[0],
-      enemyAttackDown: 0,
-      enemySpeedDown: 0,
-      turns: 0,
-      log: [`野生の${getSpecies(speciesId).name}が現れた！`]
+      id: uid('battle'), fixedEncounterId: null, enemy,
+      activePokemonId: a.party[0], enemyAttackDown: 0, enemySpeedDown: 0,
+      turns: 0, log: [`野生の${getSpecies(speciesId).name}が現れた！`]
     };
     return true;
+  }
+
+  function ensureStoryState(adventure) {
+    if (!adventure.storyFlags || typeof adventure.storyFlags !== 'object') adventure.storyFlags = {};
+    if (!Array.isArray(adventure.storyFlags.discoveredAreas)) adventure.storyFlags.discoveredAreas = [adventure.location && adventure.location.mapId || 'town'];
+    if (!adventure.storyFlags.events || typeof adventure.storyFlags.events !== 'object') adventure.storyFlags.events = {};
+  }
+
+  function discoverArea(adventure, mapId, at) {
+    ensureStoryState(adventure);
+    if (adventure.storyFlags.discoveredAreas.includes(mapId)) return false;
+    adventure.storyFlags.discoveredAreas.push(mapId);
+    addHistory(adventure, 'discovery', `${MAPS[mapId] || mapId}を発見した`, at || isoNow());
+    return true;
+  }
+
+  function triggerStoryEvent(state, mapId, x, y, at) {
+    const a = state.adventure;
+    ensureStoryState(a);
+    const event = Object.values(STORY_EVENT_TILES).find(item => item.mapId === mapId && item.x === x && item.y === y);
+    if (!event || a.storyFlags.events[event.id]) return null;
+    a.storyFlags.events[event.id] = true;
+    if (event.kind === 'item' && event.item === 'potion') a.inventory.potion = (a.inventory.potion || 0) + event.quantity;
+    addHistory(a, 'story_event', event.history, at || isoNow());
+    return event.message;
   }
 
   function canTriggerFixedEncounter(state, encounterId) {
@@ -393,13 +447,29 @@
     return !flag || flag.noRespawn !== true;
   }
 
+  function getFixedEncounterAt(state, mapId, x, y) {
+    const definition = Object.values(FIXED_ENCOUNTERS).find(item => item.mapId === mapId && item.x === x && item.y === y);
+    if (!definition) return null;
+    const flag = state.adventure.encounterFlags[definition.id] || null;
+    return { ...definition, available: canTriggerFixedEncounter(state, definition.id), outcome: flag ? flag.outcome : null };
+  }
+
   function startFixedEncounter(state, encounterId, speciesId, level, at) {
     const a = state.adventure;
     if (!encounterId || !canTriggerFixedEncounter(state, encounterId)) return false;
     if (!startEncounter(state, speciesId, level, at)) return false;
+    const definition = FIXED_ENCOUNTERS[encounterId] || {};
     a.activeBattle.fixedEncounterId = encounterId;
-    a.encounterFlags[encounterId] = { encountered: true, consumed: true, noRespawn: true, outcome: 'in_progress', startedAt: at || isoNow(), resolvedAt: null };
-    addHistory(a, 'fixed_encounter', `一度きりの遭遇：${getSpecies(speciesId).name}`, at || isoNow());
+    a.encounterFlags[encounterId] = {
+      encountered: true, consumed: true, noRespawn: true, outcome: 'in_progress',
+      kind: definition.kind || 'fixed', speciesId, mapId: definition.mapId || a.location.mapId,
+      x: Number.isInteger(definition.x) ? definition.x : a.location.x,
+      y: Number.isInteger(definition.y) ? definition.y : a.location.y,
+      captureAttempts: 0, captureFailures: 0, lastCaptureOutcome: null,
+      startedAt: at || isoNow(), resolvedAt: null
+    };
+    const prefix = definition.kind === 'legendary' ? '伝説ポケモンとの一度きりの遭遇' : '一度きりの固定遭遇';
+    addHistory(a, 'fixed_encounter', `${prefix}：${getSpecies(speciesId).name}`, at || isoNow());
     return true;
   }
 
@@ -411,6 +481,7 @@
 
   function endBattleWithDefeat(state, creature) {
     const a = state.adventure;
+    if (!creature || !creature.alive) return false;
     const xp = awardExperience(creature, a.activeBattle.enemy);
     battleLog(a, `${a.activeBattle.enemy.nickname}を倒した。${creature.nickname}は${xp.gained}EXPを得た。`);
     if (xp.levels) battleLog(a, `${creature.nickname}はレベル${creature.level}になった！`);
@@ -437,14 +508,14 @@
     if (result.missed) battleLog(a, `野生の${enemy.nickname}の${move.name}は当たらなかった！`);
     else {
       const damage = Math.max(1, result.damage - battle.enemyAttackDown);
-      const outcome = applyDamage(state, target.id, damage, { cause: `${move.name}（野生戦闘）`, location: a.location.mapId === 'route' ? '１ばんどうろ' : 'マサラタウン' });
+      const outcome = applyDamage(state, target.id, damage, { cause: `${move.name}（野生戦闘）`, location: MAPS[a.location.mapId] || '不明な場所' });
       battleLog(a, `${enemy.nickname}の${move.name}！ ${target.nickname}に${outcome.applied}ダメージ。`);
       if (outcome.died) battleLog(a, `${target.nickname}は死亡した……`);
       else if (move.poisonChance && !target.status && rng() < move.poisonChance) { target.status = 'poison'; battleLog(a, `${target.nickname}は毒を受けた！`); }
     }
     if (a.activeBattle && target.alive && target.status === 'poison') {
       const tick = Math.max(1, Math.floor(target.maxHP / 8));
-      const outcome = applyDamage(state, target.id, tick, { cause: '毒の継続ダメージ', location: a.location.mapId === 'route' ? '１ばんどうろ' : 'マサラタウン' });
+      const outcome = applyDamage(state, target.id, tick, { cause: '毒の継続ダメージ', location: MAPS[a.location.mapId] || '不明な場所' });
       if (outcome.died) battleLog(a, `${target.nickname}は毒で死亡した……`);
       else battleLog(a, `${target.nickname}は毒で${outcome.applied}ダメージを受けた。`);
     }
@@ -504,7 +575,7 @@
         if (result.missed) battleLog(a, `${player.nickname}の${move.name}は外れた！`);
         else {
           battle.enemy.currentHP = Math.max(0, battle.enemy.currentHP - result.damage);
-          battleLog(a, `${player.nickname}の${move.name}！ 野生の${battle.enemy.nickname}に${result.damage}ダメージ。`);
+          battleLog(a, `${player.nickname}の${move.name}！ ${battle.enemy.nickname}に${result.damage}ダメージ。`);
           if (result.effectiveness > 1) battleLog(a, '効果はばつぐんだ！');
           if (result.effectiveness < 1) battleLog(a, '効果はいまひとつのようだ。');
           if (move.poisonChance && battle.enemy.currentHP > 0 && rng() < move.poisonChance) battle.enemy.status = 'poison';
@@ -525,14 +596,27 @@
       const enemy = battle.enemy;
       const hpFactor = 1 - enemy.currentHP / enemy.maxHP;
       const chance = clamp(getSpecies(enemy.speciesId).catchRate * (0.3 + hpFactor * 0.9), 0.05, 0.95);
+      if (battle.fixedEncounterId && a.encounterFlags[battle.fixedEncounterId]) {
+        const flag = a.encounterFlags[battle.fixedEncounterId];
+        flag.captureAttempts = (flag.captureAttempts || 0) + 1;
+        flag.lastCaptureOutcome = 'attempted';
+        flag.lastCaptureAttemptAt = isoNow();
+      }
       if (rng() < chance) {
         const caught = createCreature(enemy.speciesId, enemy.level, { membership: 'party' });
         registerCreature(state, caught);
         battleLog(a, `やった！ ${enemy.nickname}を捕まえた！`);
+        if (battle.fixedEncounterId && a.encounterFlags[battle.fixedEncounterId]) a.encounterFlags[battle.fixedEncounterId].lastCaptureOutcome = 'caught';
         finishFixedEncounter(a, 'caught');
         a.activeBattle = null;
         a.pendingNicknameId = caught.id;
         return { ok: true, caughtId: caught.id };
+      }
+      if (battle.fixedEncounterId && a.encounterFlags[battle.fixedEncounterId]) {
+        const flag = a.encounterFlags[battle.fixedEncounterId];
+        flag.captureFailures = (flag.captureFailures || 0) + 1;
+        flag.lastCaptureOutcome = 'failed';
+        flag.lastCaptureAttemptAt = isoNow();
       }
       battleLog(a, `ボールから出てしまった！`);
     } else if (action.type === 'run') {
@@ -564,6 +648,12 @@
     return true;
   }
 
+  function tileEventHint(adventure, mapId, x, y) {
+    ensureStoryState(adventure);
+    const item = Object.values(STORY_EVENT_TILES).find(event => event.mapId === mapId && event.x === x && event.y === y);
+    return !!(item && !adventure.storyFlags.events[item.id]);
+  }
+
   function movePlayer(state, dx, dy, rng, at) {
     const a = state.adventure;
     if (a.activeBattle || a.recoveryState === 'starter_select') return { ok: false, reason: '今は移動できません。' };
@@ -571,59 +661,106 @@
     const x = a.location.x + dx;
     const y = a.location.y + dy;
     if (x < 0 || x > 11 || y < 0 || y > 7) return { ok: false, reason: 'これ以上進めません。' };
-    if (a.location.mapId === 'town') {
-      if (y === 0 && x === 5) {
-        a.location = { mapId: 'route', x: 5, y: 6 };
-        a.storyFlags.firstDeparture = true;
-        addHistory(a, 'travel', '１ばんどうろへ出発した', at || isoNow());
-        return { ok: true, areaChanged: true };
-      }
-      if (y === 0 || (x >= 0 && x <= 11 && y === 7)) return { ok: false, reason: '建物や柵に阻まれている。' };
-    } else if (a.location.mapId === 'route') {
-      if (y === 7 && x === 5) {
-        a.location = { mapId: 'town', x: 5, y: 1 };
-        return { ok: true, areaChanged: true };
-      }
-      if (y === 7 || y === 0) return { ok: false, reason: '道が続いていない。' };
+    const fromMap = a.location.mapId;
+    let destination = null;
+
+    if (fromMap === 'town' && y === 0 && x === 5) destination = { mapId: 'route', x: 5, y: 6, event: '１ばんどうろへ出発した' };
+    else if (fromMap === 'route' && y === 7 && x === 5) destination = { mapId: 'town', x: 5, y: 1, event: 'マサラタウンへ戻った' };
+    else if (fromMap === 'route' && y === 0 && x === 5) destination = { mapId: 'viridian', x: 5, y: 6, event: 'トキワシティに到着した' };
+    else if (fromMap === 'route' && x === 10 && y === 1) destination = { mapId: 'powerplant', x: 5, y: 6, event: 'むじんはつでんしょを発見した' };
+    else if (fromMap === 'viridian' && y === 7 && x === 5) destination = { mapId: 'route', x: 5, y: 1, event: '１ばんどうろへ戻った' };
+    else if (fromMap === 'viridian' && y === 0 && x === 5) destination = { mapId: 'route2', x: 5, y: 6, event: '２ばんどうろへ進んだ' };
+    else if (fromMap === 'route2' && y === 7 && x === 5) destination = { mapId: 'viridian', x: 5, y: 1, event: 'トキワシティへ戻った' };
+    else if (fromMap === 'route2' && y === 0 && x === 5) destination = { mapId: 'forest', x: 5, y: 6, event: 'トキワのもりへ入った' };
+    else if (fromMap === 'forest' && y === 7 && x === 5) destination = { mapId: 'route2', x: 5, y: 1, event: '２ばんどうろへ戻った' };
+    else if (fromMap === 'forest' && y === 0 && x === 5) destination = { mapId: 'pewter', x: 5, y: 6, event: 'ニビシティに到着した' };
+    else if (fromMap === 'pewter' && y === 7 && x === 5) destination = { mapId: 'forest', x: 5, y: 1, event: 'トキワのもりへ戻った' };
+    else if (fromMap === 'powerplant' && y === 7 && x === 5) destination = { mapId: 'route', x: 10, y: 1, event: '１ばんどうろへ戻った' };
+
+    if (destination) {
+      a.location = { mapId: destination.mapId, x: destination.x, y: destination.y };
+      if (fromMap === 'town' && destination.mapId === 'route') a.storyFlags.firstDeparture = true;
+      if (destination.mapId === 'powerplant') a.storyFlags.powerplantDiscovered = true;
+      discoverArea(a, destination.mapId, at || isoNow());
+      addHistory(a, 'travel', destination.event, at || isoNow());
+      return { ok: true, areaChanged: true, areaName: MAPS[destination.mapId] };
     }
+
+    // Keep the small demo maps bounded; north/south exits exist only at the centre gate.
+    if ((fromMap === 'town' || CITY_MAPS.includes(fromMap)) && ((y === 0 && x !== 5) || (y === 7 && x !== 5) || x === 0 || x === 11)) return { ok: false, reason: '建物や柵に阻まれている。' };
+    if ((fromMap === 'route' || fromMap === 'route2') && (y === 0 || y === 7 || x === 0 || x === 11)) return { ok: false, reason: '道が続いていない。' };
+    if (fromMap === 'forest' && (y === 0 || y === 7 || x === 0 || x === 11)) return { ok: false, reason: '木々に阻まれている。' };
+    if (fromMap === 'powerplant' && (x === 0 || x === 11 || y === 0 || (y === 7 && x !== 5))) return { ok: false, reason: '施設の壁に阻まれている。' };
+
     a.location.x = x;
     a.location.y = y;
     const random = rng || Math.random;
-    if (a.recoveryState === 'none' && a.party.length > 0 && a.location.mapId === 'route' && x >= 2 && x <= 8 && y >= 2 && y <= 5 && random() < 0.22) {
-      const options = [
-        ['pidgey', 2, 4], ['rattata', 2, 4], ['caterpie', 2, 3], ['weedle', 2, 3], ['pikachu', 3, 5]
-      ];
-      const picked = options[Math.floor(random() * options.length)];
-      startEncounter(state, picked[0], picked[1] + Math.floor(random() * (picked[2] - picked[1] + 1)), at);
-    }
+
     if (a.recoveryState === 'none' && a.party.length > 0) a.stepsSincePoisonTick += 1;
     if (a.stepsSincePoisonTick >= 3 && a.recoveryState === 'none') {
       a.stepsSincePoisonTick = 0;
       const poisoned = a.party.slice().filter(id => a.pokemonRecords[id] && a.pokemonRecords[id].status === 'poison');
       for (const id of poisoned) {
         const creature = a.pokemonRecords[id];
-        const outcome = applyDamage(state, id, Math.max(1, Math.floor(creature.maxHP / 8)), { cause: 'フィールド上の毒ダメージ', location: a.location.mapId === 'route' ? '１ばんどうろ' : 'マサラタウン', at: at || isoNow() });
+        const outcome = applyDamage(state, id, Math.max(1, Math.floor(creature.maxHP / 8)), { cause: 'フィールド上の毒ダメージ', location: MAPS[a.location.mapId] || '不明な場所', at: at || isoNow() });
         if (outcome.died) addHistory(a, 'death', `${creature.nickname}はフィールド上の毒で死亡した`);
       }
       if (a.party.length === 0) processWipe(state, at);
     }
-    return { ok: true, encounter: !!a.activeBattle };
+
+    let storyMessage = null;
+    if (a.recoveryState === 'none' && a.party.length > 0) storyMessage = triggerStoryEvent(state, a.location.mapId, x, y, at);
+
+    if (a.recoveryState === 'none' && a.party.length > 0 && !a.activeBattle && !storyMessage) {
+      const fixed = getFixedEncounterAt(state, a.location.mapId, x, y);
+      if (fixed && fixed.available) {
+        startFixedEncounter(state, fixed.id, fixed.speciesId, fixed.level, at);
+      } else {
+        let options = null;
+        let probability = 0;
+        if (a.location.mapId === 'route' && x >= 2 && x <= 8 && y >= 2 && y <= 5) {
+          options = [['pidgey', 2, 4], ['rattata', 2, 4], ['caterpie', 2, 3], ['weedle', 2, 3], ['pikachu', 3, 5]];
+          probability = 0.22;
+        } else if (a.location.mapId === 'route2' && x >= 2 && x <= 9 && y >= 2 && y <= 5) {
+          options = [['nidoran_m', 3, 5], ['nidoran_f', 3, 5], ['oddish', 3, 5], ['pidgey', 3, 5], ['rattata', 3, 5]];
+          probability = 0.2;
+        } else if (a.location.mapId === 'forest' && x >= 2 && x <= 9 && y >= 2 && y <= 5) {
+          options = [['caterpie', 4, 6], ['weedle', 4, 6], ['metapod', 5, 7], ['kakuna', 5, 7], ['pikachu', 4, 6]];
+          probability = 0.2;
+        } else if (a.location.mapId === 'powerplant' && x >= 2 && x <= 9 && y >= 2 && y <= 5) {
+          options = [['magnemite', 18, 22], ['voltorb', 18, 22], ['pikachu', 16, 20]];
+          probability = 0.18;
+        }
+        if (options && random() < probability) {
+          const picked = options[Math.floor(random() * options.length)];
+          startEncounter(state, picked[0], picked[1] + Math.floor(random() * (picked[2] - picked[1] + 1)), at);
+        }
+      }
+    }
+    return { ok: true, encounter: !!a.activeBattle, areaChanged: false, storyMessage };
   }
 
-  function getCurrentMapName(state) { return state.adventure.location.mapId === 'route' ? '１ばんどうろ' : 'マサラタウン'; }
+  function getCurrentMapName(state) { return MAPS[state.adventure.location.mapId] || '不明な場所'; }
+  function getMapName(mapId) { return MAPS[mapId] || '不明な場所'; }
 
-  function isAtTownFacility(state) { return state.adventure.location.mapId === 'town'; }
+  function isAtTownFacility(state) { return CITY_MAPS.includes(state.adventure.location.mapId); }
   function isAtRestSpot(state) {
     const p = state.adventure.location;
-    return (p.mapId === 'town' && p.x === 3 && p.y === 2) || (p.mapId === 'route' && p.x === 10 && p.y === 6);
+    const restTile = REST_TILES[p.mapId];
+    return (!!restTile && p.x === restTile.x && p.y === restTile.y) || (p.mapId === 'route' && p.x === 10 && p.y === 6);
   }
   function currentRestKind(state) {
     const p = state.adventure.location;
-    if (p.mapId === 'town' && p.x === 3 && p.y === 2) return 'town';
+    const restTile = REST_TILES[p.mapId];
+    if (restTile && p.x === restTile.x && p.y === restTile.y) return 'town';
     if (p.mapId === 'route' && p.x === 10 && p.y === 6) return 'camp';
     return null;
   }
-  function isAtBoxFacility(state) { return state.adventure.location.mapId === 'town' && state.adventure.location.x === 8 && state.adventure.location.y === 2; }
+  function isAtBoxFacility(state) {
+    const p = state.adventure.location;
+    const boxTile = BOX_TILES[p.mapId];
+    return !!boxTile && p.x === boxTile.x && p.y === boxTile.y;
+  }
 
   function makeBackup(state, exportedAt) {
     assertValidSave(state);
@@ -647,9 +784,12 @@
     const a = state.adventure;
     if (!a.pokemonRecords || !Array.isArray(a.party) || !Array.isArray(a.box) || !Array.isArray(a.graveyard)) throw new Error('個体データの構造が不正です。');
     if (!Array.isArray(a.historyEvents) || !a.pokedex || !a.storyFlags || !a.inventory || !a.encounterFlags) throw new Error('冒険データの構造が不正です。');
+    if (a.storyFlags.discoveredAreas !== undefined && (!Array.isArray(a.storyFlags.discoveredAreas) || a.storyFlags.discoveredAreas.some(mapId => !MAPS[mapId]))) throw new Error('発見エリアの記録が不正です。');
+    if (a.storyFlags.events !== undefined && (!a.storyFlags.events || typeof a.storyFlags.events !== 'object' || Array.isArray(a.storyFlags.events))) throw new Error('ストーリーイベント記録が不正です。');
+    if (a.lastRestTownId !== undefined && !CITY_MAPS.includes(a.lastRestTownId)) throw new Error('最後に休憩した街の記録が不正です。');
     if (!Number.isInteger(a.money) || a.money < 0 || !Number.isInteger(a.wipeCount) || a.wipeCount < 0) throw new Error('所持金または全滅回数が不正です。');
     if (!Number.isInteger(a.inventory.potion || 0) || (a.inventory.potion || 0) < 0 || !Number.isInteger(a.inventory.pokeball || 0) || (a.inventory.pokeball || 0) < 0) throw new Error('道具の個数が不正です。');
-    if (!a.location || !['town', 'route'].includes(a.location.mapId) || !Number.isInteger(a.location.x) || !Number.isInteger(a.location.y) || a.location.x < 0 || a.location.x > 11 || a.location.y < 0 || a.location.y > 7) throw new Error('現在地が不正です。');
+    if (!a.location || !Object.prototype.hasOwnProperty.call(MAPS, a.location.mapId) || !Number.isInteger(a.location.x) || !Number.isInteger(a.location.y) || a.location.x < 0 || a.location.x > 11 || a.location.y < 0 || a.location.y > 7) throw new Error('現在地が不正です。');
     if (a.party.length > PARTY_LIMIT) throw new Error('手持ちが上限を超えています。');
     const collections = [a.party, a.box, a.graveyard];
     const ids = collections.flat();
@@ -668,22 +808,31 @@
     if (a.recoveryState === 'none' && a.party.length === 0) throw new Error('手持ちが空のまま通常状態になっています。');
     if (a.recoveryState === 'box_rebuild' && (a.party.length !== 0 || a.box.length === 0)) throw new Error('ボックス再編成状態が不正です。');
     if (a.recoveryState === 'starter_select' && (a.party.length !== 0 || a.box.length !== 0)) throw new Error('再出発状態が不正です。');
+    for (const [encounterId, flag] of Object.entries(a.encounterFlags)) {
+      if (!flag || typeof flag !== 'object' || typeof flag.noRespawn !== 'boolean' || typeof flag.encountered !== 'boolean') throw new Error(`固定遭遇フラグが不正です: ${encounterId}`);
+      if (flag.noRespawn && flag.encountered !== true) throw new Error(`固定遭遇の消費状態が不正です: ${encounterId}`);
+      if (flag.noRespawn && !['in_progress', 'defeated', 'escaped', 'caught', 'lost_in_wipe'].includes(flag.outcome)) throw new Error(`固定遭遇の結果が不正です: ${encounterId}`);
+      if (flag.kind === 'legendary' && !flag.noRespawn) throw new Error(`伝説遭遇の再出現フラグが不正です: ${encounterId}`);
+    }
     if (a.activeBattle) {
       const enemy = a.activeBattle.enemy;
       if (a.recoveryState !== 'none' || !a.party.length || !enemy || !getSpecies(enemy.speciesId) || enemy.currentHP <= 0 || !a.party.includes(a.activeBattle.activePokemonId)) throw new Error('戦闘状態が不正です。');
-      if (a.activeBattle.fixedEncounterId && !a.encounterFlags[a.activeBattle.fixedEncounterId]) throw new Error('固定遭遇フラグがありません。');
+      if (a.activeBattle.fixedEncounterId) {
+        const flag = a.encounterFlags[a.activeBattle.fixedEncounterId];
+        if (!flag || flag.noRespawn !== true || flag.outcome !== 'in_progress') throw new Error('固定遭遇フラグがありません、または戦闘状態と一致しません。');
+      }
     }
     return true;
   }
 
   return {
-    SAVE_SCHEMA_VERSION, PARTY_LIMIT, STARTER_IDS, MOVES, SPECIES,
+    SAVE_SCHEMA_VERSION, PARTY_LIMIT, STARTER_IDS, MOVES, SPECIES, MAPS, FIXED_ENCOUNTERS, STORY_EVENT_TILES,
     getSpecies, getMove, statsAtLevel, createCreature, createAdventure,
     addHistory, recordSeen, registerCreature, healCreature, applyDamage,
     processWipe, selectNewStarter, moveToParty, moveToBox, rest, applyPotion,
-    calculateDamage, awardExperience, startEncounter, startFixedEncounter, canTriggerFixedEncounter, resolveBattleAction,
-    renameCreature, movePlayer, getCurrentMapName, isAtTownFacility,
+    calculateDamage, awardExperience, startEncounter, startFixedEncounter, canTriggerFixedEncounter, getFixedEncounterAt, resolveBattleAction,
+    renameCreature, movePlayer, getCurrentMapName, getMapName, isAtTownFacility,
     isAtRestSpot, currentRestKind, isAtBoxFacility, makeBackup, parseBackup,
-    assertValidSave, killCreature
+    assertValidSave, killCreature, tileEventHint
   };
 });
